@@ -67,3 +67,9 @@ export default defineConfig([
   },
 ])
 ```
+
+## Архитектура приложения 
+
+- `components` — универсальные переиспользуемые элементы (`Button`, `Page`, `Loading`, `Header`).
+- `features` — бизнес-логика и действия пользователя (`auth`, `entries`, `emotions`).
+- `widgets` — законченные блоки интерфейса, которые собирают данные и отображают их (`DiaryTable`, `EntryForm`, `EmotionPicker`).
