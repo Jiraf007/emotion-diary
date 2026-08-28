@@ -1,10 +1,11 @@
-import { Button, Field, Input, NativeSelect, Stack, Textarea } from '@chakra-ui/react'
+import { Button, Field, Input, Stack, Textarea } from '@chakra-ui/react'
 import { format, parseISO } from 'date-fns'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
+import { useCreateEntry } from '@/features/entries/hooks'
 import type { CreateEntryFormData } from '@/features/entries/types'
-import { useEmotions } from '@/features/emotions/hooks'
+import { EntryEmotionsList } from '../EntryEmotionsList'
 
 const DATE_TIME_INPUT_FORMAT = "yyyy-MM-dd'T'HH:mm"
 
@@ -22,11 +23,8 @@ const parseDateTimeLocalValue = (value: unknown) => {
 
 export const EntryForm = () => {
   const happenedAt = useMemo(() => new Date(), [])
-  const {
-    data: emotions,
-    isError: isEmotionsError,
-    isLoading: isEmotionsLoading,
-  } = useEmotions()
+  const createEntry = useCreateEntry()
+
 
   const {
     control,
@@ -35,15 +33,16 @@ export const EntryForm = () => {
   } = useForm<CreateEntryFormData>({
     defaultValues: {
       happenedAt,
-      emotionId: '',
       event: '',
       thoughts: '',
       actions: '',
+      emotions: []
     },
   })
 
   const onSubmit = (data: CreateEntryFormData) => {
     console.log(data)
+    createEntry.mutate(data)
   }
 
   return (
@@ -100,7 +99,7 @@ export const EntryForm = () => {
         </Field.Root>
 
         {/* ЭМОЦИИ */}
-        <Field.Root invalid={isEmotionsError}>
+        {/* <Field.Root invalid={isEmotionsError}>
           <Field.Label>
             Эмоции
             <Field.RequiredIndicator />
@@ -109,7 +108,7 @@ export const EntryForm = () => {
           <NativeSelect.Root>
             <NativeSelect.Field
               disabled={isEmotionsLoading || isEmotionsError}
-              placeholder={isEmotionsLoading ? 'Загрузка...' : 'Выбери эмоцию'}
+              placeholder={isEmotionsLoading ? 'Загрузка...' : 'Выбери эмоции и их интенсивность'}
               {...register('emotionId', {
                 required: true,
               })}
@@ -131,7 +130,9 @@ export const EntryForm = () => {
               Не удалось загрузить эмоции
             </Field.ErrorText>
           )}
-        </Field.Root>
+        </Field.Root> */}
+
+        <EntryEmotionsList />
 
         {/* ДЕЙСТВИЯ */}
         <Field.Root>
@@ -147,6 +148,7 @@ export const EntryForm = () => {
 
         <Button
           type="submit"
+          loading={createEntry.isPending}
         >
           Сохранить
         </Button>

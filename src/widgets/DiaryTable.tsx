@@ -1,7 +1,13 @@
-import { Table } from "@chakra-ui/react"
+import { Table } from '@chakra-ui/react'
+import { format, parseISO } from 'date-fns'
 
+import type { Entry } from '@/features/entries/types'
 
-export const DiaryTable = () => {
+interface DiaryTableProps {
+  entries: Entry[]
+}
+
+export const DiaryTable = ({ entries }: DiaryTableProps) => {
   return (
     <Table.Root size="md">
       <Table.Header>
@@ -13,28 +19,18 @@ export const DiaryTable = () => {
           <Table.ColumnHeader>Действия</Table.ColumnHeader>
         </Table.Row>
       </Table.Header>
+
       <Table.Body>
-        {items.map((item) => (
-          <Table.Row key={item.id}>
-            <Table.Cell>{item.date}</Table.Cell>
-            <Table.Cell>{item.event}</Table.Cell>
-            <Table.Cell>{item.thoughts}</Table.Cell>
-            <Table.Cell>{item.emotions}</Table.Cell>
-            <Table.Cell>{item.actions}</Table.Cell>
+        {entries.map((entry) => (
+          <Table.Row key={entry.id}>
+            <Table.Cell>{format(parseISO(entry.event_date), 'dd.MM.yyyy HH:mm')}</Table.Cell>
+            <Table.Cell>{entry.event}</Table.Cell>
+            <Table.Cell>{entry.thoughts || '—'}</Table.Cell>
+            <Table.Cell>—</Table.Cell>
+            <Table.Cell>{entry.actions || '—'}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>
     </Table.Root>
   )
 }
-
-const items = [
-  {
-    id: 1,
-    date: "2023-10-01",
-    event: "Пришёл отказ от потенциального работодателя",
-    thoughts: "Я ни на что не способен. У меня всё равно ничего не получится",
-    emotions: "Гнев, паника, тревога, злость",
-    actions: "Заварил чай. Пошел мониторить новые вакансии"
-  },
-]

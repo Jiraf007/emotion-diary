@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabase'
 
-export const getEmotions = async () => {
+import type { Emotion } from './types'
+
+export const getEmotions = async (): Promise<Emotion[]> => {
   const { data, error } = await supabase
     .from('emotions')
     .select('*')
@@ -10,5 +12,5 @@ export const getEmotions = async () => {
     throw error
   }
 
-  return data
+  return data as Emotion[]
 }
