@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { CreateEntryFormData, Entry } from './types'
+import type { CreateEntryFormData, EntryWithEmotions } from './types'
 
 // СОЗДАНИЕ НОВОЙ ЗАПИСИ 
 export const createEntry = async (
@@ -54,10 +54,22 @@ export const createEntry = async (
 }
 
 // ПОЛУЧЕНИЕ СПИСКА ЗАПИСЕЙ
-export const getEntries = async (): Promise<Entry[]> => {
+export const getEntries = async (): Promise<EntryWithEmotions[]> => {
   const { data, error } = await supabase
     .from('entries')
-    .select('*')
+    .select(`
+      *,
+      entry_emotions (
+        emotion_id,
+        intensity,
+        emotions (
+          id,
+          name,
+          emoji,
+          category
+        )
+      )
+    `)
     .order('event_date', { ascending: false })
 
   if (error) {

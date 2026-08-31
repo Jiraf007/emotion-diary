@@ -132,7 +132,16 @@ export const EntryForm = () => {
           )}
         </Field.Root> */}
 
-        <EntryEmotionsList />
+        <Controller
+          control={control}
+          name="emotions"
+          render={({ field }) => (
+            <EntryEmotionsList
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
 
         {/* ДЕЙСТВИЯ */}
         <Field.Root>

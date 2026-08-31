@@ -1,4 +1,5 @@
-import { Box, Text } from '@chakra-ui/react'
+import { Box, Button, Text } from '@chakra-ui/react'
+import { Link } from 'react-router-dom'
 
 import { useEntries } from '@/features/entries/hooks'
 import { DiaryTable } from '@/widgets/DiaryTable'
@@ -28,6 +29,15 @@ export const DiaryPage = () => {
 
   return (
     <Box p="4">
+      <Button
+        asChild
+        mb="4"
+      >
+        <Link to="/entries/new">
+          Добавить запись
+        </Link>
+      </Button>
+
       <DiaryTable entries={entries} />
     </Box>
   )

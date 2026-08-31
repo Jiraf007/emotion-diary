@@ -1,3 +1,15 @@
+import type { Emotion } from '@/features/emotions/types'
+
+export interface EntryEmotion {
+  emotion_id: number
+  intensity: number
+  emotions: Emotion
+}
+
+export interface EntryWithEmotions extends Entry {
+  emotions: EntryEmotion[]
+}
+
 export interface CreateEntryFormData {
   happenedAt: Date
   event: string
@@ -17,4 +29,6 @@ export interface Entry {
   actions: string | null
   event_date: string
   created_at: string
+  // 
+  entry_emotions: EntryEmotion[]
 }
