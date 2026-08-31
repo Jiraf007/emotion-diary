@@ -1,6 +1,6 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { createEntry, getEntries } from './api'
+import { createEntry, deleteEntry, getEntries } from './api'
 
 export const useEntries = () => {
   return useQuery({
@@ -12,5 +12,19 @@ export const useEntries = () => {
 export const useCreateEntry = () => {
   return useMutation({
     mutationFn: createEntry,
+  })
+}
+
+export const useDeleteEntry = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: deleteEntry,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['entries'],
+      })
+    },
   })
 }

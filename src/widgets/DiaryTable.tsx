@@ -1,6 +1,7 @@
-import { Badge, Table } from '@chakra-ui/react'
+import { Badge, Menu, Portal, Table } from '@chakra-ui/react'
 import { format, parseISO } from 'date-fns'
 
+import { useDeleteEntry } from '@/features/entries/hooks'
 import type { Entry } from '@/features/entries/types'
 
 interface DiaryTableProps {
@@ -8,6 +9,8 @@ interface DiaryTableProps {
 }
 
 export const DiaryTable = ({ entries }: DiaryTableProps) => {
+  const { mutate: deleteEntry, isPending: isDeleting } = useDeleteEntry()
+
   return (
     <Table.Root size="md">
       <Table.Header>
@@ -22,7 +25,9 @@ export const DiaryTable = ({ entries }: DiaryTableProps) => {
 
       <Table.Body>
         {entries.map((entry) => (
-          <Table.Row key={entry.id}>
+          <Menu.Root key={entry.id}>
+            <Menu.ContextTrigger asChild>
+              <Table.Row cursor="context-menu">
             <Table.Cell>{format(parseISO(entry.event_date), 'dd.MM.yyyy HH:mm')}</Table.Cell>
             <Table.Cell>{entry.event}</Table.Cell>
             <Table.Cell>{entry.thoughts || '—'}</Table.Cell>
@@ -32,7 +37,24 @@ export const DiaryTable = ({ entries }: DiaryTableProps) => {
               )}
             </Table.Cell>
             <Table.Cell>{entry.actions || '—'}</Table.Cell>
-          </Table.Row>
+              </Table.Row>
+            </Menu.ContextTrigger>
+
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content>
+                  <Menu.Item
+                    value="delete"
+                    color="red.400"
+                    disabled={isDeleting}
+                    onClick={() => deleteEntry(entry.id)}
+                  >
+                    Удалить запись
+                  </Menu.Item>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
+          </Menu.Root>
         ))}
       </Table.Body>
     </Table.Root>

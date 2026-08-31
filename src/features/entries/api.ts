@@ -78,3 +78,15 @@ export const getEntries = async (): Promise<EntryWithEmotions[]> => {
 
   return data
 }
+
+// УДАЛЕНИЕ ЗАПИСИ
+export const deleteEntry = async (entryId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('entries')
+    .delete()
+    .eq('id', entryId)
+
+  if (error) {
+    throw error
+  }
+}
