@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createHashRouter } from 'react-router-dom'
 
 import { App } from '@/App'
 
@@ -10,7 +10,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { GuestRoute } from '@/components/GuestRoute'
 import { CreateEntryPage } from '@/pages/CreateEntryPage'
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: '/',
     element: (
@@ -47,7 +47,4 @@ export const router = createBrowserRouter([
       </GuestRoute>
     ),
   },
-],
-  {
-    basename: '/emotion-diary/',
-  })
+])
