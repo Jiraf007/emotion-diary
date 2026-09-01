@@ -2,6 +2,7 @@ import { Button, Field, Input, Stack, Textarea } from '@chakra-ui/react'
 import { format, parseISO } from 'date-fns'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 import { useCreateEntry } from '@/features/entries/hooks'
 import type { CreateEntryFormData } from '@/features/entries/types'
@@ -22,6 +23,7 @@ const parseDateTimeLocalValue = (value: unknown) => {
 }
 
 export const EntryForm = () => {
+  const navigate = useNavigate()
   const happenedAt = useMemo(() => new Date(), [])
   const createEntry = useCreateEntry()
 
@@ -41,8 +43,9 @@ export const EntryForm = () => {
   })
 
   const onSubmit = (data: CreateEntryFormData) => {
-    console.log(data)
-    createEntry.mutate(data)
+    createEntry.mutate(data, {
+      onSuccess: () => navigate('/'),
+    })
   }
 
   return (

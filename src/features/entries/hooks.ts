@@ -15,8 +15,16 @@ export const useEntries = () => {
 }
 
 export const useCreateEntry = () => {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: createEntry,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['entries'],
+      })
+    },
   })
 }
 
