@@ -1,5 +1,5 @@
 import { useAuth } from '@/providers/useAuth';
-import { Button, Flex, Heading } from '@chakra-ui/react';
+import { Badge, Button, Flex, Heading } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
 export const Header = () => {
@@ -15,8 +15,10 @@ export const Header = () => {
           </Heading>
 
           {user ? (
-            <Flex gap="2" align="center">
-              <span>{user.email}</span>
+            <Flex gap="4" align="center">
+              <Badge variant="subtle" colorPalette="teal">
+                {user.is_anonymous ? 'Demo mode' : user.email}
+              </Badge>
 
               <Button onClick={signOut}>
                 Выйти

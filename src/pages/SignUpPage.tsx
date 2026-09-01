@@ -1,85 +1,171 @@
-import { type SubmitEvent, useState } from 'react'
-import { signUp } from '../features/auth/api'
+import {
+  Alert,
+  Button,
+  Card,
+  Field,
+  Flex,
+  Heading,
+  Input,
+  Link as ChakraLink,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+
+import { signUp } from '@/features/auth/api'
+import { DemoSignInButton } from '@/components/DemoSignInButton'
+
+interface SignUpFormData {
+  email: string
+  password: string
+}
 
 export const SignUpPage = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [isDemoSubmitting, setIsDemoSubmitting] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpFormData>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
-
-  const handleSubmit = async (e: SubmitEvent) => {
-    e.preventDefault()
+  const onSubmit = async ({ email, password }: SignUpFormData) => {
+    setIsSuccess(false)
 
     try {
-      setLoading(true)
-      setError('')
-
       await signUp(email, password)
-
-      setSuccess(true)
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('Что-то пошло не так')
-      }
-    } finally {
-      setLoading(false)
+      setIsSuccess(true)
+    } catch (error) {
+      setError('root', {
+        message: error instanceof Error
+          ? error.message
+          : 'Не удалось создать аккаунт',
+      })
     }
   }
 
   return (
-    <div
-      style={{
-        maxWidth: 400,
-        margin: '40px auto',
-      }}
+    <Flex
+      minH="100dvh"
+      align="center"
+      justify="center"
+      bg="bg.subtle"
+      px="4"
+      py="10"
     >
-      <h1>Регистрация</h1>
+      <Card.Root width="full" maxW="md" shadow="lg">
+        <Card.Header gap="2" textAlign="center">
+          <Heading size="2xl">Регистрация</Heading>
+          <Text color="fg.muted">
+            Создайте аккаунт, чтобы начать вести дневник эмоций
+          </Text>
+        </Card.Header>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email</label>
-          <br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+        <Card.Body>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <Stack gap="5">
+              <Field.Root required invalid={Boolean(errors.email)}>
+                <Field.Label>
+                  Email
+                  <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  type="email"
+                  autoComplete="email"
+                  placeholder="name@example.com"
+                  {...register('email', {
+                    required: 'Введите email',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Введите корректный email',
+                    },
+                  })}
+                />
+                <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
+              </Field.Root>
 
-        <br />
+              <Field.Root required invalid={Boolean(errors.password)}>
+                <Field.Label>
+                  Пароль
+                  <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder="Придумайте пароль"
+                  {...register('password', {
+                    required: 'Введите пароль',
+                    minLength: {
+                      value: 6,
+                      message: 'Пароль должен содержать минимум 6 символов',
+                    },
+                  })}
+                />
+                <Field.HelperText>Минимум 6 символов</Field.HelperText>
+                <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
+              </Field.Root>
 
-        <div>
-          <label>Пароль</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+              {errors.root?.message && (
+                <Alert.Root status="error">
+                  <Alert.Indicator />
+                  <Alert.Content>
+                    <Alert.Description>{errors.root.message}</Alert.Description>
+                  </Alert.Content>
+                </Alert.Root>
+              )}
 
-        <br />
+              {isSuccess && (
+                <Alert.Root status="success">
+                  <Alert.Indicator />
+                  <Alert.Content>
+                    <Alert.Description>
+                      Аккаунт успешно создан
+                    </Alert.Description>
+                  </Alert.Content>
+                </Alert.Root>
+              )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Создаем...' : 'Создать аккаунт'}
-        </button>
-      </form>
+              <Button
+                type="submit"
+                width="full"
+                loading={isSubmitting}
+                loadingText="Создаём..."
+                disabled={isDemoSubmitting}
+              >
+                Создать аккаунт
+              </Button>
 
-      {error && (
-        <p style={{ color: 'red' }}>
-          {error}
-        </p>
-      )}
+              <DemoSignInButton
+                disabled={isSubmitting}
+                onBeforeSignIn={() => {
+                  clearErrors('root')
+                  setIsSuccess(false)
+                }}
+                onPendingChange={setIsDemoSubmitting}
+                onError={(message) => setError('root', { message })}
+              />
+            </Stack>
+          </form>
+        </Card.Body>
 
-      {success && (
-        <p>
-          Аккаунт создан 🎉
-        </p>
-      )}
-    </div>
+        <Card.Footer justifyContent="center">
+          <Text color="fg.muted">
+            Уже есть аккаунт?{' '}
+            <ChakraLink asChild colorPalette="teal" fontWeight="medium">
+              <Link to="/login">Войти</Link>
+            </ChakraLink>
+          </Text>
+        </Card.Footer>
+      </Card.Root>
+    </Flex>
   )
 }

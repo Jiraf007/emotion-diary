@@ -40,3 +40,13 @@ export const getCurrentUser = async () => {
 
   return user
 }
+
+export const signInAnonymously = async () => {
+  const { data, error } = await supabase.auth.signInAnonymously()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
