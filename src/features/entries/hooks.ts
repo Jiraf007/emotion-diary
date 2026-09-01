@@ -1,11 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { useAuth } from '@/providers/useAuth'
+
 import { createEntry, deleteEntry, getEntries } from './api'
 
 export const useEntries = () => {
+  const { user } = useAuth()
+
   return useQuery({
-    queryKey: ['entries'],
+    queryKey: ['entries', user?.id],
     queryFn: getEntries,
+    enabled: Boolean(user),
   })
 }
 
