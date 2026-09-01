@@ -47,4 +47,7 @@ export const router = createBrowserRouter([
       </GuestRoute>
     ),
   },
-])
+],
+  {
+    basename: '/emotion-diary/',
+  })
